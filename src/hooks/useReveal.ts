@@ -33,6 +33,9 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>() {
 /** Tracks the active section id based on scroll position for nav highlighting. */
 export function useActiveSection(ids: string[]) {
   const [active, setActive] = useState(ids[0] ?? '');
+  const key = ids.join(',');
+  const idsRef = useRef(ids);
+  idsRef.current = ids;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -45,13 +48,13 @@ export function useActiveSection(ids: string[]) {
       { rootMargin: '-40% 0px -50% 0px' },
     );
 
-    ids.forEach((id) => {
+    idsRef.current.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
 
     return () => observer.disconnect();
-  }, [ids]);
+  }, [key]);
 
   return active;
 }
